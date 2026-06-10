@@ -23,8 +23,20 @@
     <a href="index2.html">Link to index2.html</a>
   </div>
   <!--Synchro Chat Widget Start-->
-  <script id="synchro-chat-widget" src="https://beta.synchrotraining.com/loader.js?namespace=pmp-stormwind" async>
-  </script>
+  <script>
+        (function () {
+            // Get namespace from URL query parameter, fallback to 'pmp-stormwind'
+            const urlParams = new URLSearchParams(window.location.search);
+            const namespace = urlParams.get('namespace') || 'pmp-stormwind';
+
+            // Create and insert the widget script
+            const script = document.createElement('script');
+            script.id = 'synchro-chat-widget';
+            script.src = `http://localhost:3000/loader.js?namespace=${namespace}`;
+            script.async = true;
+            document.currentScript.parentNode.insertBefore(script, document.currentScript.nextSibling);
+        })();
+    </script>
   <!--Synchro Chat Widget End-->
 </body>
 </html>
