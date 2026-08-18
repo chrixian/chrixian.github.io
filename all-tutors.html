@@ -1,0 +1,1275 @@
+<!doctype html>
+<!--
+  ============================================================================
+  SYNCHRO EDUCATION — ALL TUTORS HUB
+  Route: /tutors   (deploy this file so it serves at that path; on most
+  static hosts that means tutors/index.html)
+
+  This page inherits the landing page's design system verbatim (CSS sections
+  1-17 below are identical to synchro-education-landing.html; section 18 adds
+  tutor-page components). Keep the copies in sync, or extract the shared CSS
+  to one stylesheet at build time.
+
+  ENGINEER NOTES — INTEGRATION INDEX (search "INTEGRATION POINT")
+    IP-1a English & Literature tutor chat API  (tab panel 1)
+    IP-1b History tutor chat API               (tab panel 2; in-chat course
+          selector: American / World / African American / Combined)
+    IP-1c Government & Economics tutor chat API (tab panel 3)
+    IP-1d World Languages tutor chat API       (tab panel 4; in-chat selector:
+          Spanish / French / Chinese / Italian)
+    IP-2  Email opt-in forms x2 (schools band + final CTA) — HubSpot-
+          compatible fields: email required, name optional. Client-side
+          stub only. DO NOT SHIP without wiring.
+    IP-3  "Bring Synchro to your school" — placeholder scheduling URL.
+    IP-4  Share link — SHARE_LINKS object at the top of the <script> block.
+    IP-5  Privacy Policy link — /privacy page is PENDING (the on-page
+          condensed privacy copy is approved to publish as-is).
+
+  PRIVACY GUARDRAIL: this page publicly promises zero data collection.
+  Do not add third-party analytics, pixels, or session recording without
+  revisiting that claim with the team first.
+
+  FONTS: loaded from Google Fonts for now; self-host for production.
+  ============================================================================
+-->
+<html lang="en" class="no-js">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>The Synchro Tutors — four free AI tutors, no sign-up | Synchro Education</title>
+  <meta name="description" content="English, History, Government &amp; Economics, and World Languages — free AI tutors for grades 6–12 built on licensed academic content. Anonymous by design: no accounts, no data collection.">
+  <link rel="canonical" href="https://synchroeducation.com/tutors">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="The Synchro Tutors — four free AI tutors, no sign-up | Synchro Education">
+  <meta property="og:description" content="English, History, Government &amp; Economics, and World Languages — free AI tutors for grades 6–12 built on licensed academic content. Anonymous by design: no accounts, no data collection.">
+  <meta property="og:url" content="https://synchroeducation.com/tutors">
+  <meta property="og:image" content="https://synchroeducation.com/assets/og-card.jpg"><!-- ASSET: shared 1200x630 social card -->
+  <link rel="icon" href='data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><rect x="3" y="3" width="26" height="22" rx="7" fill="%230B2545"/><path d="M9 25 L9 30 L15 25 Z" fill="%230B2545"/><rect x="9" y="11" width="14" height="2.6" rx="1.3" fill="%23F4F7FA"/><rect x="9" y="16.4" width="9" height="2.6" rx="1.3" fill="%2317C0CE"/></svg>'>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700&family=Schibsted+Grotesk:wght@500;600;700;800&family=Spline+Sans+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+  <style>
+    /* ==========================================================
+       1. TOKENS — formalized from Synchro letterhead
+       ========================================================== */
+    :root{
+      --midnight:#061830;   /* deepest navy: hero, bands, footer   */
+      --navy:#0B2545;       /* primary navy: ink, buttons          */
+      --teal:#17C0CE;       /* brand accent: graphics on dark      */
+      --teal-ink:#0E7C8A;   /* accessible teal for text on light   */
+      --teal-lift:#5FD6E0;  /* teal for small text on midnight     */
+      --gold:#E3A83B;       /* the letterhead diagonal — signature */
+      --gold-deep:#C98F2B;
+      --paper:#F4F7FA;      /* light surface                       */
+      --white:#FFFFFF;
+      --slate:#3F5570;      /* secondary text on light             */
+      --line:rgba(11,37,69,.10);
+      --line-dark:rgba(244,247,250,.14);
+      --err:#B42318;
+
+      --font-display:'Schibsted Grotesk', 'Avenir Next', 'Segoe UI', system-ui, sans-serif;
+      --font-body:'Public Sans', -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
+      --font-mono:'Spline Sans Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+
+      --maxw:1180px;
+      --r-card:22px;
+      --r-inner:16px;
+      --shadow-card:0 22px 55px -28px rgba(6,24,48,.30);
+      --shadow-panel:0 34px 74px -30px rgba(3,12,26,.55);
+    }
+
+    /* ==========================================================
+       2. BASE
+       ========================================================== */
+    *,*::before,*::after{box-sizing:border-box}
+    html{scroll-padding-top:96px}
+    @media (prefers-reduced-motion:no-preference){ html{scroll-behavior:smooth} }
+    body{
+      margin:0;
+      font-family:var(--font-body);
+      font-size:16px;
+      line-height:1.6;
+      color:var(--navy);
+      background:var(--paper);
+      -webkit-font-smoothing:antialiased;
+      text-rendering:optimizeLegibility;
+    }
+    img{max-width:100%;display:block}
+    h1,h2,h3,h4{font-family:var(--font-display);line-height:1.12;margin:0;letter-spacing:-.015em;text-wrap:balance}
+    p{margin:0}
+    .prose p + p{margin-top:1em}
+    a{color:var(--teal-ink)}
+    ::selection{background:var(--teal);color:var(--midnight)}
+    [id]{scroll-margin-top:96px}
+    .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+
+    .container{max-width:var(--maxw);margin-inline:auto;padding-inline:clamp(20px,4vw,32px)}
+    .section{padding-block:clamp(4.5rem,9vw,7.5rem)}
+    .band{background:var(--midnight);color:#EFF4F8}
+    .band h2,.band h3{color:#fff}
+    .dim{color:rgba(244,247,250,.74)}
+
+    .section-head{max-width:46rem}
+    .section-head h2{font-size:clamp(1.85rem,3.4vw,2.55rem);font-weight:700;margin:.9rem 0 1rem}
+    .section-head .lead{font-size:1.06rem;color:var(--slate)}
+    .band .section-head .lead{color:rgba(244,247,250,.78)}
+
+    /* ==========================================================
+       3. THE GOLD LINE — signature system
+       One diagonal, one direction, three scales:
+       seam (section boundary) / tick (eyebrows, stats) / word (hero "never")
+       ========================================================== */
+    .tick{
+      display:inline-block;width:20px;height:8px;background:var(--gold);
+      clip-path:polygon(0 100%,78% 0,100% 0,22% 100%);flex:none;
+    }
+    .eyebrow{
+      display:inline-flex;align-items:center;gap:.6rem;
+      font:600 .76rem/1 var(--font-body);letter-spacing:.16em;text-transform:uppercase;
+      color:var(--teal-ink);
+    }
+    .band .eyebrow{color:var(--teal-lift)}
+
+    .seam{height:clamp(56px,7vw,88px);display:block}
+    .seam svg{width:100%;height:100%;display:block}
+    .seam .above{fill:var(--seam-above)}
+    .seam .stripe{fill:var(--gold)}
+    .seam{background:var(--seam-below)}
+    .seam--dark-paper{--seam-above:var(--midnight);--seam-below:var(--paper)}
+    .seam--paper-dark{--seam-above:var(--paper);--seam-below:var(--midnight)}
+    .seam--dark-white{--seam-above:var(--midnight);--seam-below:var(--white)}
+    .seam--white-dark{--seam-above:var(--white);--seam-below:var(--midnight)}
+
+    /* ==========================================================
+       4. BUTTONS + FOCUS
+       ========================================================== */
+    .btn{
+      display:inline-flex;align-items:center;justify-content:center;gap:.5rem;
+      font:600 .95rem/1 var(--font-body);letter-spacing:.01em;
+      padding:.88rem 1.55rem;border-radius:999px;border:1.5px solid transparent;
+      cursor:pointer;text-decoration:none;white-space:nowrap;
+      transition:background .18s ease,border-color .18s ease,color .18s ease,transform .18s ease;
+    }
+    .btn:hover{transform:translateY(-1px)}
+    .btn-gold{background:var(--gold);color:var(--midnight)}
+    .btn-gold:hover{background:var(--gold-deep)}
+    .btn-navy{background:var(--navy);color:#fff}
+    .btn-navy:hover{background:var(--midnight)}
+    .btn-ghost{border-color:rgba(11,37,69,.30);color:var(--navy);background:transparent}
+    .btn-ghost:hover{border-color:var(--navy)}
+    .band .btn-ghost{border-color:rgba(244,247,250,.36);color:#F4F7FA}
+    .band .btn-ghost:hover{border-color:#fff}
+    .btn-sm{padding:.62rem 1.1rem;font-size:.86rem}
+
+    a:focus-visible,button:focus-visible,input:focus-visible,summary:focus-visible{
+      outline:3px solid var(--teal);outline-offset:2.5px;border-radius:6px;
+    }
+    .btn:focus-visible,.chip:focus-visible,.send:focus-visible{border-radius:999px}
+
+    /* ==========================================================
+       5. NAV
+       ========================================================== */
+    .nav{
+      position:sticky;top:0;z-index:60;
+      background:rgba(6,24,48,.93);
+      -webkit-backdrop-filter:saturate(140%) blur(10px);
+      backdrop-filter:saturate(140%) blur(10px);
+      border-bottom:1px solid rgba(244,247,250,.08);
+    }
+    .nav-inner{display:flex;align-items:center;gap:1.6rem;height:72px}
+    .brand{display:flex;align-items:center;gap:.7rem;text-decoration:none;margin-right:auto}
+    .brand-mark{flex:none}
+    .brand-word{display:block;font-family:var(--font-display);font-weight:700;font-size:1.24rem;line-height:1;color:#fff;letter-spacing:-.01em}
+    .brand-sub{display:block;margin-top:.22rem;font:500 .58rem/1 var(--font-mono);letter-spacing:.4em;color:var(--teal-lift);text-transform:uppercase}
+    .nav-links{display:flex;align-items:center;gap:1.7rem}
+    .nav-links a:not(.btn){color:rgba(244,247,250,.78);font:500 .92rem/1 var(--font-body);text-decoration:none;padding:.4rem 0}
+    .nav-links a:not(.btn):hover{color:#fff}
+    .nav-toggle{display:none;background:none;border:0;color:#fff;cursor:pointer;padding:.5rem;margin-left:.2rem}
+
+    /* ==========================================================
+       6. HERO
+       ========================================================== */
+    .hero{
+      position:relative;overflow:hidden;color:#EFF4F8;
+      background:
+        radial-gradient(1000px 560px at 8% -12%, rgba(23,192,206,.15), transparent 60%),
+        radial-gradient(760px 480px at 96% 16%, rgba(227,168,59,.07), transparent 55%),
+        var(--midnight);
+    }
+    .hero-inner{
+      display:grid;grid-template-columns:1.04fr .96fr;align-items:center;
+      gap:clamp(2.5rem,5vw,4.5rem);
+      padding-block:clamp(3.6rem,7vw,5.6rem) clamp(4.2rem,7vw,6rem);
+    }
+    .hero h1{
+      font-size:clamp(2.3rem,4.6vw,3.5rem);line-height:1.06;letter-spacing:-.022em;
+      font-weight:800;color:#fff;margin:1.15rem 0 1.2rem;max-width:18ch;
+    }
+    .hero h1 .gold{color:var(--gold)}
+    .hero .sub{font-size:1.08rem;line-height:1.65;color:rgba(244,247,250,.82);max-width:33rem}
+    .cta-row{display:flex;flex-wrap:wrap;gap:.9rem;margin-top:1.7rem}
+    .hero-form{margin-top:1.4rem;max-width:30rem}
+    .hero-form .row{display:flex;gap:.6rem;flex-wrap:wrap}
+    .hero-form input[type=email]{
+      flex:1 1 220px;min-width:0;border-radius:999px;padding:.82rem 1.15rem;
+      font:500 .92rem var(--font-body);color:#fff;
+      background:rgba(255,255,255,.07);border:1px solid rgba(244,247,250,.24);
+    }
+    .hero-form input::placeholder{color:rgba(244,247,250,.5)}
+    .hero-form input:focus{border-color:var(--teal)}
+    .fineprint{font-size:.8rem;color:var(--slate);line-height:1.5}
+    .band .fineprint,.hero .fineprint{color:rgba(244,247,250,.62)}
+    .hero-form .fineprint{margin-top:.55rem}
+    .form-err{display:block;margin-top:.5rem;font:500 .85rem var(--font-body);color:#FFB3A7}
+    .form-ok{display:flex;align-items:center;gap:.55rem;font:600 .95rem var(--font-body);color:var(--teal-lift)}
+
+    /* Decorative oversized speech bubble behind the panel */
+    .hero-bubble{position:absolute;right:-150px;top:-100px;width:480px;opacity:.05;pointer-events:none}
+    .skip{
+      position:fixed;left:14px;top:14px;z-index:100;
+      background:var(--gold);color:var(--midnight);text-decoration:none;
+      font:700 .9rem var(--font-body);padding:.75rem 1.15rem;border-radius:999px;
+      transform:translateY(-300%);transition:transform .2s ease;
+    }
+    .skip:focus{transform:translateY(0)}
+    .hero-panel{position:relative;z-index:1}
+
+    /* ==========================================================
+       7. CHAT SURFACES (hero panel + tutor cards)
+       ========================================================== */
+    .panel{
+      background:#fff;color:var(--navy);border-radius:var(--r-card);
+      box-shadow:var(--shadow-panel);overflow:hidden;max-width:520px;margin-left:auto;
+    }
+    .panel-head{display:flex;align-items:center;gap:.6rem;padding:.95rem 1.15rem;border-bottom:1px solid var(--line)}
+    .dot{width:9px;height:9px;border-radius:50%;background:var(--teal);flex:none}
+    .panel-title{font:600 .95rem/1.2 var(--font-body)}
+    .panel-tag{
+      margin-left:auto;font:500 .68rem/1 var(--font-mono);letter-spacing:.1em;
+      color:var(--teal-ink);border:1px solid rgba(14,124,138,.35);border-radius:999px;
+      padding:.32rem .62rem;white-space:nowrap;
+    }
+    .chat{background:#F7FAFC;padding:1.05rem;display:flex;flex-direction:column;gap:.65rem}
+    .sample-tag{
+      display:inline-flex;align-items:center;gap:.5rem;align-self:flex-start;
+      font:500 .64rem/1 var(--font-mono);letter-spacing:.16em;text-transform:uppercase;color:var(--slate);
+    }
+    .sample-tag .tick{width:15px;height:6px}
+    .msg{
+      max-width:86%;padding:.72rem .95rem;border-radius:16px;
+      font-size:.93rem;line-height:1.5;
+    }
+    .msg.tutor{align-self:flex-start;background:#fff;border:1px solid var(--line);border-bottom-left-radius:5px}
+    .msg.student{align-self:flex-end;background:#DBF2F5;border:1px solid rgba(23,192,206,.35);border-bottom-right-radius:5px}
+    .chip-row{display:flex;flex-wrap:wrap;gap:.45rem;align-self:flex-start;max-width:88%}
+    .chip{
+      font:600 .74rem/1 var(--font-body);padding:.44rem .78rem;border-radius:999px;cursor:pointer;
+      border:1px solid rgba(14,124,138,.42);background:#fff;color:var(--teal-ink);
+      transition:background .15s ease,color .15s ease,border-color .15s ease;
+    }
+    .chip[aria-pressed=true]{background:var(--navy);border-color:var(--navy);color:#fff}
+    .chat-foot{display:flex;gap:.6rem;align-items:center;padding:.85rem 1rem;background:#fff;border-top:1px solid var(--line)}
+    .chat-input{
+      flex:1;min-width:0;border:1px solid var(--line);background:var(--paper);
+      border-radius:999px;padding:.68rem 1.05rem;font:400 .9rem var(--font-body);color:var(--navy);
+    }
+    .chat-input::placeholder{color:rgba(63,85,112,.9)}
+    .send{
+      width:42px;height:42px;flex:none;border-radius:50%;border:0;cursor:pointer;
+      background:var(--navy);color:#fff;display:grid;place-items:center;
+      transition:background .18s ease;
+    }
+    .send:hover{background:var(--midnight)}
+    .chat-note{font:500 .68rem/1.4 var(--font-mono);letter-spacing:.06em;color:var(--slate);text-align:center;padding:.55rem .9rem .8rem;background:#fff}
+
+    /* Bubble reveal: only when JS is present; instant under reduced motion */
+    .js .chat .msg,.js .chat .chip-row{opacity:0;transform:translateY(9px);transition:opacity .5s ease var(--d,0s),transform .5s ease var(--d,0s)}
+    .js .chat.live .msg,.js .chat.live .chip-row{opacity:1;transform:none}
+
+    /* Hero entrance orchestration */
+    .js .hero [data-rise]{opacity:0;transform:translateY(14px);transition:opacity .7s ease var(--d,0s),transform .7s ease var(--d,0s)}
+    .js .hero.in [data-rise]{opacity:1;transform:none}
+
+    /* ==========================================================
+       8. PROBLEM SECTION + PHOTO SLOTS
+       ========================================================== */
+    .split{display:grid;grid-template-columns:1.05fr .95fr;gap:clamp(2.5rem,5vw,4rem);align-items:center}
+    .said-line{
+      font-family:var(--font-display);font-weight:700;
+      font-size:clamp(1.45rem,2.6vw,1.95rem);line-height:1.3;letter-spacing:-.01em;
+      color:var(--navy);margin:1.1rem 0 1.2rem;max-width:32rem;text-wrap:balance;
+    }
+    .photo{
+      position:relative;border-radius:20px;overflow:hidden;aspect-ratio:4/3;
+      background:
+        radial-gradient(420px 300px at 80% 20%, rgba(23,192,206,.22), transparent 65%),
+        linear-gradient(135deg,#0A2C50 0%,var(--midnight) 55%,#0C3B57 100%);
+    }
+    .photo img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+    .photo .ph-mark{position:absolute;left:7%;bottom:8%;width:34%;opacity:.14}
+
+    /* ==========================================================
+       9. TUTOR CARDS
+       ========================================================== */
+    .white{background:var(--white)}
+    .tutor-grid{
+      display:grid;gap:1.8rem;margin-top:2.6rem;
+      grid-template-columns:repeat(auto-fit,minmax(min(470px,100%),1fr));
+    }
+    .tutor{
+      background:#fff;border:1px solid var(--line);border-radius:var(--r-card);
+      padding:1.65rem;display:flex;flex-direction:column;gap:1.05rem;
+      transition:box-shadow .2s ease,transform .2s ease;
+    }
+    .tutor:hover{box-shadow:var(--shadow-card);transform:translateY(-2px)}
+    .tutor h3{font-size:1.28rem;font-weight:700}
+    .tutor .desc{font-size:.94rem;color:var(--slate);margin-top:.35rem}
+    .card-chat{border:1px solid var(--line);border-radius:var(--r-inner);overflow:hidden}
+    .card-chat .chat{padding:.9rem;gap:.6rem}
+    .card-chat .msg{font-size:.9rem}
+    .card-chat .send{width:38px;height:38px}
+    .share{margin-top:auto;display:flex;flex-direction:column;gap:.55rem;padding-top:1.1rem;border-top:1px solid var(--line)}
+    .share-line{display:flex;gap:.6rem}
+    .share-url{
+      flex:1;min-width:0;display:flex;align-items:center;
+      font:400 .8rem/1 var(--font-mono);color:var(--slate);
+      background:var(--paper);border:1px dashed rgba(11,37,69,.28);border-radius:12px;
+      padding:.55rem .85rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+    }
+    .btn-copy{
+      flex:none;display:inline-flex;align-items:center;gap:.45rem;cursor:pointer;
+      font:600 .84rem/1 var(--font-body);white-space:nowrap;
+      border:1.5px solid var(--navy);color:var(--navy);background:#fff;
+      border-radius:999px;padding:.55rem 1.05rem;
+      transition:background .18s ease,color .18s ease,border-color .18s ease;
+    }
+    .btn-copy:hover{background:var(--navy);color:#fff}
+    .btn-copy.copied{background:var(--teal-ink);border-color:var(--teal-ink);color:#fff}
+    .share-all{
+      margin-top:2.1rem;background:var(--paper);border:1px solid var(--line);border-radius:18px;
+      padding:1.6rem 1.8rem;display:grid;grid-template-columns:1.15fr minmax(320px,1fr);
+      gap:1.6rem;align-items:center;
+    }
+    .share-all h3{font-size:1.18rem}
+    .share-all .desc{font-size:.94rem;color:var(--slate);margin-top:.3rem}
+
+    /* ==========================================================
+       10. SAFEGUARDS (trust pillars) + PRIVACY PANEL
+       ========================================================== */
+    .pillars{display:grid;gap:1.7rem;margin-top:2.6rem;grid-template-columns:repeat(auto-fit,minmax(min(240px,100%),1fr))}
+    .pillar-icon{
+      width:44px;height:44px;border-radius:12px;background:#fff;border:1px solid var(--line);
+      display:grid;place-items:center;color:var(--teal-ink);margin-bottom:1rem;
+    }
+    .pillar h3{font-size:1.06rem;font-weight:700;margin-bottom:.45rem}
+    .pillar p{font-size:.93rem;color:var(--slate)}
+    .privacy{
+      margin-top:3.6rem;background:#fff;border:1px solid var(--line);border-radius:20px;
+      padding:clamp(1.8rem,4vw,2.6rem);
+      display:grid;grid-template-columns:1.5fr auto;gap:2rem;align-items:center;
+    }
+    .privacy h3{font-size:clamp(1.3rem,2.2vw,1.55rem);display:flex;align-items:center;gap:.7rem;flex-wrap:wrap}
+    .privacy .prose{margin-top:.8rem;color:var(--slate);font-size:.98rem;max-width:46rem}
+
+    /* ==========================================================
+       11. PROOF BAND
+       ========================================================== */
+    .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:2rem;text-align:center;margin-top:.4rem}
+    .stat b{
+      display:block;font-family:var(--font-display);font-weight:800;
+      font-size:clamp(2.5rem,5.4vw,3.7rem);line-height:1;letter-spacing:-.02em;color:#fff;
+    }
+    .stat .tick{margin:.9rem auto .75rem}
+    .stat .lab{font:500 .76rem/1.5 var(--font-mono);letter-spacing:.12em;text-transform:uppercase;color:rgba(244,247,250,.72)}
+    .partner-card{
+      margin:3.2rem auto 0;max-width:46rem;text-align:center;
+      border:1px solid var(--line-dark);background:rgba(255,255,255,.045);
+      border-radius:16px;padding:1.6rem 2rem;
+    }
+    .partner-card .lab{font:500 .68rem/1 var(--font-mono);letter-spacing:.22em;text-transform:uppercase;color:var(--teal-lift)}
+    .partner-card .name{font-family:var(--font-display);font-weight:700;font-size:1.35rem;color:#fff;margin:.55rem 0 .6rem}
+    .partner-card p{font-size:.95rem;color:rgba(244,247,250,.78)}
+
+    /* ==========================================================
+       12. HAND-OFF STEPS
+       ========================================================== */
+    .steps{list-style:none;counter-reset:step;display:grid;gap:1.6rem;margin:2.1rem 0 0;padding:0}
+    .steps li{position:relative;padding-left:3.5rem}
+    .steps li::before{
+      counter-increment:step;content:counter(step);
+      position:absolute;left:0;top:0;width:2.35rem;height:2.35rem;
+      border:1.5px solid var(--teal-ink);color:var(--teal-ink);border-radius:50%;
+      display:grid;place-items:center;font:700 1.02rem var(--font-display);
+    }
+    .steps b{display:block;font-family:var(--font-display);font-weight:700;font-size:1.05rem;color:var(--navy)}
+    .steps p{font-size:.94rem;color:var(--slate);margin-top:.3rem}
+    .handoff-line{margin-top:2rem;font-size:1rem;color:var(--navy);font-weight:600;max-width:34rem}
+
+    /* ==========================================================
+       13. FOR SCHOOLS BAND
+       ========================================================== */
+    .schools-inner{display:grid;grid-template-columns:1.02fr .98fr;gap:clamp(2.5rem,6vw,4.5rem);align-items:start}
+    .features{list-style:none;margin:0;padding:0;display:grid;gap:1.15rem}
+    .features li{display:grid;grid-template-columns:26px 1fr;gap:.95rem;align-items:start}
+    .features svg{color:var(--teal-lift);margin-top:.15rem}
+    .features b{display:block;font-family:var(--font-display);font-weight:700;font-size:.99rem;color:#fff}
+    .features span{display:block;font-size:.9rem;color:rgba(244,247,250,.72);margin-top:.15rem}
+    .free-line{margin-top:1.9rem;font-weight:600;color:var(--gold)}
+
+    /* ==========================================================
+       14. FAQ
+       ========================================================== */
+    .faq-list{max-width:840px;margin:2.3rem auto 0;display:grid;gap:.9rem}
+    .faq-list details{background:#fff;border:1px solid var(--line);border-radius:16px}
+    .faq-list summary{
+      list-style:none;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:1rem;
+      padding:1.1rem 1.4rem;font:600 1.02rem/1.4 var(--font-body);color:var(--navy);
+    }
+    .faq-list summary::-webkit-details-marker{display:none}
+    .plus{position:relative;width:18px;height:18px;flex:none}
+    .plus::before,.plus::after{content:"";position:absolute;inset:0;margin:auto;background:var(--teal-ink);border-radius:2px;transition:transform .2s ease}
+    .plus::before{width:14px;height:2px}
+    .plus::after{width:2px;height:14px}
+    details[open] .plus::after{transform:rotate(90deg)}
+    .faq-a{padding:0 1.4rem 1.25rem;color:var(--slate);font-size:.96rem;max-width:60rem}
+
+    /* ==========================================================
+       15. FINAL CTA + FOOTER
+       ========================================================== */
+    .final{text-align:center}
+    .final-inner{max-width:640px;margin-inline:auto}
+    .final h2{font-size:clamp(1.85rem,3.4vw,2.5rem);font-weight:700;margin:.9rem 0 1rem}
+    .final .lead{color:var(--slate);font-size:1.05rem}
+    .crm-form{display:flex;flex-wrap:wrap;gap:.7rem;justify-content:center;margin-top:1.8rem}
+    .crm-form input{
+      min-width:0;border-radius:999px;padding:.85rem 1.2rem;
+      font:500 .93rem var(--font-body);color:var(--navy);
+      background:var(--paper);border:1px solid rgba(11,37,69,.22);
+    }
+    .crm-form input:focus{border-color:var(--teal-ink)}
+    .crm-form input[name=firstname]{flex:1 1 170px}
+    .crm-form input[name=email]{flex:1 1 240px}
+    .final .form-err{color:var(--err)}
+    .final .form-ok{color:var(--teal-ink);justify-content:center;margin-top:1.6rem}
+    .final .alt{margin-top:1.5rem;font-size:.95rem;color:var(--slate)}
+
+    .footer{background:var(--midnight);color:rgba(244,247,250,.72);padding:4rem 0 2rem}
+    .footer-grid{display:grid;grid-template-columns:1.5fr .7fr .7fr .9fr;gap:2.5rem}
+    .footer .brand-word{font-size:1.15rem}
+    .footer .tagline{margin-top:1rem;font-size:.9rem;max-width:24rem;color:rgba(244,247,250,.6)}
+    .footer h4{font:500 .68rem/1 var(--font-mono);letter-spacing:.22em;text-transform:uppercase;color:var(--teal-lift);margin-bottom:1rem}
+    .footer ul{list-style:none;margin:0;padding:0;display:grid;gap:.55rem}
+    .footer a{color:rgba(244,247,250,.72);text-decoration:none;font-size:.92rem}
+    .footer a:hover{color:#fff;text-decoration:underline}
+    .footer-bottom{
+      margin-top:3.2rem;padding-top:1.5rem;border-top:1px solid var(--line-dark);
+      display:flex;flex-wrap:wrap;gap:.8rem;justify-content:space-between;
+      font-size:.8rem;color:rgba(244,247,250,.52);
+    }
+
+    /* ==========================================================
+       16. RESPONSIVE
+       ========================================================== */
+    @media (max-width:960px){
+      .hero-inner{grid-template-columns:1fr;padding-block:3rem 3.6rem}
+      .hero h1{max-width:none}
+      .panel{margin-inline:auto;max-width:560px}
+      .split,.schools-inner,.privacy,.share-all{grid-template-columns:1fr}
+      .split .photo{order:2}
+      .privacy{gap:1.4rem}
+      .footer-grid{grid-template-columns:1fr 1fr}
+    }
+    @media (max-width:920px){
+      .nav-toggle{display:inline-flex}
+      .nav-links{
+        display:none;position:absolute;top:72px;left:0;right:0;
+        flex-direction:column;align-items:stretch;gap:0;
+        background:var(--midnight);border-bottom:1px solid var(--line-dark);
+        padding:.4rem 1.4rem 1.3rem;
+      }
+      .nav.open .nav-links{display:flex}
+      .nav-links a:not(.btn){padding:.9rem 0;border-bottom:1px solid rgba(244,247,250,.08)}
+      .nav-links .btn{margin-top:1rem;justify-content:center}
+    }
+    @media (max-width:640px){
+      .stats{grid-template-columns:1fr;gap:2.4rem}
+      .cta-row .btn{flex:1 1 100%}
+      .share-line{flex-wrap:wrap}
+      .btn-copy{flex:1;justify-content:center}
+      .footer-grid{grid-template-columns:1fr}
+    }
+
+    /* ==========================================================
+       17. REDUCED MOTION — hard floor
+       ========================================================== */
+    @media (prefers-reduced-motion:reduce){
+      *,*::before,*::after{animation:none!important;transition:none!important}
+      .js .chat .msg,.js .chat .chip-row,.js .hero [data-rise]{opacity:1!important;transform:none!important}
+      .btn:hover,.tutor:hover{transform:none}
+    }
+  
+
+    /* ==========================================================
+       18. TUTOR PAGES (/tutors/*) — additions only.
+       Everything above this block is the landing-page design
+       system, carried verbatim so these pages read as the same
+       product. Keep the two in sync — or extract sections 1-17
+       to a shared stylesheet at build time.
+       ========================================================== */
+
+    /* Chat-first hero: minimal framing, the tutor itself is the hero */
+    .hero--tutor .hero-inner{display:block;padding-block:clamp(2.6rem,6vw,4rem) clamp(3.2rem,6vw,4.6rem)}
+    .hero--tutor .hero-head{max-width:780px;margin-inline:auto;text-align:center}
+    .hero--tutor h1{font-size:clamp(2rem,4.2vw,2.9rem);margin:.95rem auto .85rem;max-width:none}
+    .hero--tutor .sub{margin-inline:auto;max-width:40rem}
+    .panel--page{max-width:780px;margin:2.1rem auto 0}
+    .panel--page .chat{padding:1.15rem 1.2rem;gap:.7rem}
+    .chat-hint{font-size:.8rem;line-height:1.5;color:var(--slate);max-width:56ch}
+
+    /* Share row on the navy hero */
+    .hero-share{max-width:780px;margin:1.15rem auto 0;display:flex;flex-direction:column;gap:.55rem}
+    .hero-share .share-url{background:rgba(255,255,255,.06);border-color:rgba(244,247,250,.35);color:rgba(244,247,250,.88)}
+    .hero-share .btn-copy{background:transparent;border-color:rgba(244,247,250,.55);color:#F4F7FA}
+    .hero-share .btn-copy:hover{background:var(--gold);border-color:var(--gold);color:var(--midnight)}
+    .hero-share .btn-copy.copied{background:var(--teal-ink);border-color:var(--teal-ink);color:#fff}
+    .hero-share .fineprint{text-align:center}
+    .no-mathsci{max-width:780px;margin:1.9rem auto 0;text-align:center;font-size:.9rem;line-height:1.6;color:rgba(244,247,250,.66)}
+
+    /* Hub subject tabs (JS-enhanced; without JS all four chats stack) */
+    .tabs{display:flex;flex-wrap:wrap;gap:.6rem;justify-content:center;margin:2rem auto 0;max-width:820px}
+    .tab{
+      font:600 .92rem/1 var(--font-body);padding:.72rem 1.25rem;border-radius:999px;cursor:pointer;
+      border:1px solid rgba(244,247,250,.35);background:transparent;color:rgba(244,247,250,.85);
+      transition:background .15s ease,color .15s ease,border-color .15s ease;
+    }
+    .tab[aria-selected=false]:hover{border-color:#fff;color:#fff}
+    .tab[aria-selected=true]{background:var(--gold);border-color:var(--gold);color:var(--midnight);font-weight:700}
+    .tabpanels{max-width:780px;margin:.4rem auto 0}
+    .js .tabpanel{display:none}
+    .js .tabpanel.active{display:block}
+    .no-js .tabs{display:none}
+    .no-js .tabpanel + .tabpanel{margin-top:1.5rem}
+    .tabpanel .panel{max-width:none;margin:1.6rem auto 0}
+
+    /* Course-value section (Section 2) */
+    .sec2-grid{display:grid;grid-template-columns:1.08fr .92fr;gap:clamp(2.4rem,5vw,4rem);align-items:start;margin-top:2.5rem}
+    .helps{list-style:none;margin:0;padding:0;display:grid;gap:1rem 2.4rem;grid-template-columns:repeat(2,minmax(0,1fr))}
+    .helps li{position:relative;padding-left:1.9rem;font-size:.95rem;line-height:1.55;color:var(--slate)}
+    .helps li b{color:var(--navy);font-weight:600}
+    .helps li::before{
+      content:"";position:absolute;left:0;top:.5em;width:16px;height:6.5px;background:var(--gold);
+      clip-path:polygon(0 100%,78% 0,100% 0,22% 100%);
+    }
+    .helps--single{grid-template-columns:1fr}
+    .helps-cols{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:2.2rem 3rem;margin-top:2.5rem}
+    .helps-cols h3{font-size:1.08rem;margin-bottom:1.1rem}
+    .prompts{background:var(--paper);border:1px solid var(--line);border-radius:var(--r-card);padding:1.6rem 1.7rem}
+    .prompts .lab{
+      display:inline-flex;align-items:center;gap:.5rem;margin-bottom:1.05rem;
+      font:500 .68rem/1 var(--font-mono);letter-spacing:.18em;text-transform:uppercase;color:var(--slate);
+    }
+    .prompts .lab .tick{width:15px;height:6px}
+    .prompt{
+      display:block;background:#DBF2F5;border:1px solid rgba(23,192,206,.35);
+      border-radius:16px;border-end-end-radius:5px;padding:.75rem 1rem;
+      font-size:.93rem;line-height:1.5;color:var(--navy);
+    }
+    .prompt + .prompt{margin-top:.8rem}
+    .prompts .fineprint{margin-top:1.05rem}
+    .callout{margin-top:3rem;background:var(--paper);border:1px solid var(--line);border-radius:18px;padding:1.7rem 1.9rem}
+    .callout h3{font-size:1.16rem;display:flex;align-items:center;gap:.7rem;flex-wrap:wrap}
+    .callout p{margin-top:.7rem;color:var(--slate);font-size:.96rem;max-width:64rem}
+    .sec2-grid .callout{margin-top:0}
+
+    /* Hub subject overview cards */
+    .subject-cards{display:grid;gap:1.5rem;margin-top:2.4rem;grid-template-columns:repeat(auto-fit,minmax(min(255px,100%),1fr))}
+    .subject-card{background:#fff;border:1px solid var(--line);border-radius:var(--r-card);padding:1.5rem;display:flex;flex-direction:column;gap:.6rem}
+    .subject-card h3{font-size:1.1rem}
+    .subject-card p{font-size:.92rem;color:var(--slate);flex:1}
+    .subject-card .more{display:inline-flex;align-items:center;gap:.45rem;font:600 .9rem var(--font-body);color:var(--teal-ink);text-decoration:none}
+    .subject-card .more:hover{text-decoration:underline}
+
+    /* Mid-page opt-in on the schools band */
+    .band-optin{margin-top:2.4rem;padding-top:1.9rem;border-top:1px solid var(--line-dark);max-width:34rem}
+    .band-optin .dim{font-size:.95rem;margin-bottom:.9rem}
+
+    /* Five-column footer (Tutors column added) */
+    .footer-grid{grid-template-columns:1.4fr .85fr .7fr .6fr .85fr}
+
+    @media (max-width:960px){
+      .sec2-grid,.helps,.helps-cols{grid-template-columns:1fr}
+    }
+    @media (max-width:640px){
+      .tab{flex:1 1 46%}
+    }
+  </style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+
+<!-- ================= NAV ================= -->
+<header class="nav" id="nav">
+  <div class="container nav-inner">
+    <a class="brand" href="/" aria-label="Synchro Education home">
+      <svg class="brand-mark" width="34" height="34" viewBox="0 0 32 32" aria-hidden="true">
+        <rect x="3" y="3" width="26" height="22" rx="7" fill="#FFFFFF"/>
+        <path d="M9 25 L9 30 L15 25 Z" fill="#FFFFFF"/>
+        <rect x="9" y="11" width="14" height="2.6" rx="1.3" fill="#0B2545"/>
+        <rect x="9" y="16.4" width="9" height="2.6" rx="1.3" fill="#17C0CE"/>
+      </svg>
+      <span>
+        <span class="brand-word">Synchro</span>
+        <span class="brand-sub">Education</span>
+      </span>
+    </a>
+    <nav class="nav-links" id="nav-links" aria-label="Page sections">
+      <a href="#subjects">The subjects</a>
+      <a href="#safeguards">Safeguards</a>
+      <a href="#schools">For schools</a>
+      <a href="#faq">FAQ</a>
+      <a class="btn btn-gold btn-sm" href="#chat">Try a tutor</a>
+    </nav>
+    <button class="nav-toggle" id="nav-toggle" aria-expanded="false" aria-controls="nav-links" aria-label="Open menu">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><line x1="3" y1="8" x2="21" y2="8"/><line x1="3" y1="16" x2="21" y2="16"/></svg>
+    </button>
+  </div>
+</header>
+
+<main id="main">
+
+<!-- ================= SECTION 1 — THE TUTOR, IMMEDIATELY =================
+     Chat-first by design: a student handed this link can start without
+     scrolling past marketing. The full Synchro pitch begins after the
+     course section, behind a deliberate break. -->
+<section class="hero hero--tutor" id="chat">
+  <svg class="hero-bubble" viewBox="0 0 200 190" fill="none" aria-hidden="true">
+    <rect x="8" y="8" width="184" height="140" rx="42" stroke="#F4F7FA" stroke-width="7"/>
+    <path d="M46 148 L46 182 L86 148" stroke="#F4F7FA" stroke-width="7" stroke-linejoin="round"/>
+  </svg>
+  <div class="container hero-inner">
+    <div class="hero-head">
+      <p class="eyebrow" data-rise style="--d:0s"><span class="tick" aria-hidden="true"></span>Free · Anonymous · No sign-up</p>
+      <h1 data-rise style="--d:.08s">The Synchro tutors</h1>
+      <p class="sub" data-rise style="--d:.16s">Pick a subject and start — free, anonymous, nothing to install or sign up for.</p>
+    </div>
+
+    <div data-rise style="--d:.24s">
+      <div class="tabs" role="tablist" aria-label="Choose a subject">
+        <button class="tab" id="tab-english" role="tab" aria-selected="true" aria-controls="pane-english" type="button">English &amp; Literature</button>
+        <button class="tab" id="tab-history" role="tab" aria-selected="false" aria-controls="pane-history" tabindex="-1" type="button">History</button>
+        <button class="tab" id="tab-gov" role="tab" aria-selected="false" aria-controls="pane-gov" tabindex="-1" type="button">Government &amp; Economics</button>
+        <button class="tab" id="tab-lang" role="tab" aria-selected="false" aria-controls="pane-lang" tabindex="-1" type="button">World Languages</button>
+      </div>
+      <div class="tabpanels">
+        <section class="tabpanel active" id="pane-english" role="tabpanel" aria-labelledby="tab-english" tabindex="0">
+          <h2 class="sr-only">English &amp; Literature</h2>
+          <div class="panel">
+            <div class="panel-head">
+              <span class="dot" aria-hidden="true"></span>
+              <span class="panel-title">English &amp; Literature Tutor</span>
+              <span class="panel-tag">NO SIGN-UP</span>
+            </div>
+            <div class="chat" data-chat-demo>
+              <span class="sample-tag"><span class="tick" aria-hidden="true"></span>Sample exchange</span>
+              <p class="msg student" style="--d:.15s"><span class="sr-only">Student: </span>I don't get what the mockingbird is supposed to symbolize.</p>
+              <p class="msg tutor" style="--d:.8s"><span class="sr-only">Tutor: </span>Let's work it out from the text. Which characters in the novel never harm anyone — and what happens to them?</p>
+            </div>
+            <!-- INTEGRATION POINT IP-1a: connect English & Literature Tutor chat API here -->
+            <form class="chat-foot" data-tutor="english">
+              <label class="sr-only" for="chat-english">Message the English and Literature tutor</label>
+              <input class="chat-input" id="chat-english" type="text" placeholder="Ask about a book, an essay, a thesis…" autocomplete="off">
+              <button class="send" type="submit" aria-label="Send message"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 2 11 13"/><path d="M22 2 15 22 11 13 2 9z"/></svg></button>
+            </form>
+            <p class="chat-note">Anonymous session · Licensed sources only</p>
+          </div>
+        </section>
+        <section class="tabpanel" id="pane-history" role="tabpanel" aria-labelledby="tab-history" tabindex="0">
+          <h2 class="sr-only">History</h2>
+          <div class="panel">
+            <div class="panel-head">
+              <span class="dot" aria-hidden="true"></span>
+              <span class="panel-title">History Tutor</span>
+              <span class="panel-tag">NO SIGN-UP</span>
+            </div>
+            <div class="chat" data-chat-demo>
+              <span class="sample-tag"><span class="tick" aria-hidden="true"></span>Sample exchange</span>
+              <p class="msg tutor" style="--d:.15s"><span class="sr-only">Tutor: </span>Which history course are you working in today?</p>
+              <div class="chip-row" style="--d:.5s" role="group" aria-label="Choose a history course">
+                <button class="chip" type="button" aria-pressed="true">American</button>
+                <button class="chip" type="button" aria-pressed="false">World</button>
+                <button class="chip" type="button" aria-pressed="false">African American</button>
+                <button class="chip" type="button" aria-pressed="false">Combined</button>
+              </div>
+              <p class="msg student" style="--d:1s"><span class="sr-only">Student: </span>American — I have a test on Reconstruction.</p>
+              <p class="msg tutor" style="--d:1.65s"><span class="sr-only">Tutor: </span>Then let's build a study map. First, in your own words: what problem was Reconstruction trying to solve?</p>
+            </div>
+            <!-- INTEGRATION POINT IP-1b: connect History Tutor chat API here -->
+            <form class="chat-foot" data-tutor="history">
+              <label class="sr-only" for="chat-history">Message the History tutor</label>
+              <input class="chat-input" id="chat-history" type="text" placeholder="Ask about an era, an event, a test…" autocomplete="off">
+              <button class="send" type="submit" aria-label="Send message"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 2 11 13"/><path d="M22 2 15 22 11 13 2 9z"/></svg></button>
+            </form>
+            <p class="chat-note">Anonymous session · Licensed sources only</p>
+          </div>
+        </section>
+        <section class="tabpanel" id="pane-gov" role="tabpanel" aria-labelledby="tab-gov" tabindex="0">
+          <h2 class="sr-only">Government &amp; Economics</h2>
+          <div class="panel">
+            <div class="panel-head">
+              <span class="dot" aria-hidden="true"></span>
+              <span class="panel-title">Government &amp; Economics Tutor</span>
+              <span class="panel-tag">NO SIGN-UP</span>
+            </div>
+            <div class="chat" data-chat-demo>
+              <span class="sample-tag"><span class="tick" aria-hidden="true"></span>Sample exchange</span>
+              <p class="msg student" style="--d:.15s"><span class="sr-only">Student: </span>What's the answer to #4 — why do prices rise when supply drops?</p>
+              <p class="msg tutor" style="--d:.8s"><span class="sr-only">Tutor: </span>You'll remember it better if you reason it out. Picture 100 people who want concert tickets and only 20 seats left. What happens next?</p>
+            </div>
+            <!-- INTEGRATION POINT IP-1c: connect Government & Economics Tutor chat API here -->
+            <form class="chat-foot" data-tutor="government-economics">
+              <label class="sr-only" for="chat-gov">Message the Government and Economics tutor</label>
+              <input class="chat-input" id="chat-gov" type="text" placeholder="Ask about civics, markets, policy…" autocomplete="off">
+              <button class="send" type="submit" aria-label="Send message"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 2 11 13"/><path d="M22 2 15 22 11 13 2 9z"/></svg></button>
+            </form>
+            <p class="chat-note">Anonymous session · Licensed sources only</p>
+          </div>
+        </section>
+        <section class="tabpanel" id="pane-lang" role="tabpanel" aria-labelledby="tab-lang" tabindex="0">
+          <h2 class="sr-only">World Languages</h2>
+          <div class="panel">
+            <div class="panel-head">
+              <span class="dot" aria-hidden="true"></span>
+              <span class="panel-title">World Languages Tutor</span>
+              <span class="panel-tag">NO SIGN-UP</span>
+            </div>
+            <div class="chat" data-chat-demo>
+              <span class="sample-tag"><span class="tick" aria-hidden="true"></span>Sample exchange</span>
+              <p class="msg tutor" style="--d:.15s"><span class="sr-only">Tutor: </span>Which language are we practicing?</p>
+              <div class="chip-row" style="--d:.5s" role="group" aria-label="Choose a language">
+                <button class="chip" type="button" aria-pressed="true">Spanish</button>
+                <button class="chip" type="button" aria-pressed="false">French</button>
+                <button class="chip" type="button" aria-pressed="false">Chinese</button>
+                <button class="chip" type="button" aria-pressed="false">Italian</button>
+              </div>
+              <p class="msg student" style="--d:1s"><span class="sr-only">Student: </span>Spanish — my oral exam is Friday.</p>
+              <p class="msg tutor" style="--d:1.65s" lang="es"><span class="sr-only" lang="en">Tutor: </span>¡Perfecto! Empecemos con calma. ¿Puedes describir tu fin de semana en tres frases completas?</p>
+            </div>
+            <!-- INTEGRATION POINT IP-1d: connect World Languages Tutor chat API here -->
+            <form class="chat-foot" data-tutor="world-languages">
+              <label class="sr-only" for="chat-lang">Message the World Languages tutor</label>
+              <input class="chat-input" id="chat-lang" type="text" placeholder="Practice a conversation, drill a verb…" autocomplete="off">
+              <button class="send" type="submit" aria-label="Send message"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 2 11 13"/><path d="M22 2 15 22 11 13 2 9z"/></svg></button>
+            </form>
+            <p class="chat-note">Anonymous session · Licensed sources only</p>
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <div class="hero-share" data-rise style="--d:.3s">
+      <div class="share-line">
+        <span class="share-url" data-share-url="all">synchroeducation.com/tutors</span>
+        <button class="btn-copy" type="button" data-copy="all">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+          <span data-copy-label>Copy the all-tutors link</span>
+        </button>
+      </div>
+      <p class="fineprint">Anonymous for everyone who opens it. No accounts, no personal data — just the link.</p>
+    </div>
+    <p class="no-mathsci" data-rise style="--d:.36s">No Math or Science tutor here — that's deliberate. Multi-step, visually represented problem solving isn't yet reliable enough for a classroom, so we haven't shipped one. Four subjects we can stand behind.</p>
+  </div>
+</section>
+
+<div class="seam seam--dark-white" aria-hidden="true"><svg viewBox="0 0 1440 88" preserveAspectRatio="none"><polygon class="above" points="0,0 1440,0 1440,6 0,58"/><polygon class="stripe" points="0,58 1440,6 1440,26 0,78"/></svg></div>
+
+<!-- ================= SECTION 2 — THE FOUR SUBJECTS ================= -->
+<section class="section white" id="subjects">
+  <div class="container">
+    <div class="section-head">
+      <p class="eyebrow"><span class="tick" aria-hidden="true"></span>The subjects</p>
+      <h2>Four tutors, one way of teaching.</h2>
+      <p class="lead">Each has its own page with course details and example prompts — or just start above.</p>
+    </div>
+    <div class="subject-cards">
+      <div class="subject-card">
+        <h3>English &amp; Literature</h3>
+        <p>Close reading, thesis building, essay structure, and revision — help writing your own argument, never one written for you.</p>
+        <a class="more" href="/tutors/english" aria-label="More about the English and Literature tutor">More about this tutor <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a>
+      </div>
+      <div class="subject-card">
+        <h3>History</h3>
+        <p>American, World, and African American History from licensed academic texts — primary sources, DBQs, and the reasoning history courses grade.</p>
+        <a class="more" href="/tutors/history" aria-label="More about the History tutor">More about this tutor <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a>
+      </div>
+      <div class="subject-card">
+        <h3>Government &amp; Economics</h3>
+        <p>The Constitution to the Fed, explained from vetted academic sources — including the parts that are easy to get politically wrong.</p>
+        <a class="more" href="/tutors/government-economics" aria-label="More about the Government and Economics tutor">More about this tutor <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a>
+      </div>
+      <div class="subject-card">
+        <h3>World Languages</h3>
+        <p>Spanish, French, Chinese, and Italian — a patient practice partner for conversation, grammar, and exam prep, at any hour.</p>
+        <a class="more" href="/tutors/world-languages" aria-label="More about the World Languages tutor">More about this tutor <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="seam seam--white-dark" aria-hidden="true"><svg viewBox="0 0 1440 88" preserveAspectRatio="none"><polygon class="above" points="0,0 1440,0 1440,6 0,58"/><polygon class="stripe" points="0,58 1440,6 1440,26 0,78"/></svg></div>
+
+<!-- ================= SECTION 3 ONWARD — THE FULL SYNCHRO CASE =================
+     Deliberate break: everything below is the complete product pitch, so this
+     page stands alone for a reader who never saw the main landing page. -->
+<section class="section band" id="proof">
+  <div class="container">
+    <div class="section-head" style="margin-inline:auto;text-align:center">
+      <p class="eyebrow" style="justify-content:center"><span class="tick" aria-hidden="true"></span>Behind these tutors</p>
+      <h2>Part of Synchro Education — built to teach, not to answer.</h2>
+      <p class="lead">Maybe a teacher sent you this link, or a colleague forwarded it. Either way, here's the whole picture: who builds this, how it works, and why it's safe to hand to a classroom.</p>
+    </div>
+    <div class="stats" style="margin-top:3rem">
+      <div class="stat">
+        <b>100+</b>
+        <span class="tick" aria-hidden="true" style="display:block"></span>
+        <span class="lab">Custom courses built</span>
+      </div>
+      <div class="stat">
+        <b>40,000+</b>
+        <span class="tick" aria-hidden="true" style="display:block"></span>
+        <span class="lab">Active users</span>
+      </div>
+      <div class="stat">
+        <b>0</b>
+        <span class="tick" aria-hidden="true" style="display:block"></span>
+        <span class="lab">Student accounts required — ever</span>
+      </div>
+    </div>
+    <p class="dim" style="text-align:center;max-width:44rem;margin:2.4rem auto 0">Synchro tutors already power learning for private education clients — the same platform behind these tutors, free for every teacher and student.</p>
+
+    <div class="partner-card">
+      <p class="lab">Content partner</p>
+      <p class="name">John Wiley &amp; Sons</p>
+      <p>Every response draws on licensed academic publications, starting with John Wiley &amp; Sons — the first of our publishing partnerships, with more in progress.</p>
+    </div>
+  </div>
+</section>
+
+<div class="seam seam--dark-paper" aria-hidden="true"><svg viewBox="0 0 1440 88" preserveAspectRatio="none"><polygon class="above" points="0,0 1440,0 1440,6 0,58"/><polygon class="stripe" points="0,58 1440,6 1440,26 0,78"/></svg></div>
+
+<!-- ================= SAFEGUARDS ================= -->
+<section class="section" id="safeguards">
+  <div class="container">
+    <div class="section-head">
+      <p class="eyebrow"><span class="tick" aria-hidden="true"></span>Safeguards</p>
+      <h2>Built for the classroom — by design, not by policy.</h2>
+      <p class="lead">General-purpose AI tools weren't made for K–12. There are no guardrails on what can be asked or how the answer gets used. Synchro is different at the architecture level.</p>
+    </div>
+
+    <div class="pillars">
+      <div class="pillar">
+        <span class="pillar-icon" aria-hidden="true">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 4h6a4 4 0 0 1 4 4v12a3 3 0 0 0-3-3H2z"/><path d="M22 4h-6a4 4 0 0 0-4 4v12a3 3 0 0 1 3-3h7z"/></svg>
+        </span>
+        <h3>Licensed content only</h3>
+        <p>Every answer is generated from vetted, licensed academic publications — never the open internet. No misinformation, no outdated sources, no surprises.</p>
+      </div>
+      <div class="pillar">
+        <span class="pillar-icon" aria-hidden="true">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v6c0 1.66 3.58 3 8 3s8-1.34 8-3V5"/><path d="M4 11v6c0 1.66 3.58 3 8 3s8-1.34 8-3v-6"/><line x1="3" y1="21" x2="21" y2="3"/></svg>
+        </span>
+        <h3>Zero data collection</h3>
+        <p>No names, emails, or IP addresses — ever. Sessions are anonymous by design, so there's nothing to sign up for and nothing to protect.</p>
+      </div>
+      <div class="pillar">
+        <span class="pillar-icon" aria-hidden="true">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="16.2 7.8 14.1 14.1 7.8 16.2 9.9 9.9 16.2 7.8"/></svg>
+        </span>
+        <h3>A mentor, not an answer machine</h3>
+        <p>Ask a Synchro tutor for finished work and it declines — then coaches you through building your own, with guided questions and step-by-step reasoning.</p>
+      </div>
+      <div class="pillar">
+        <span class="pillar-icon" aria-hidden="true">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18.2 8c5.1 0 5.1 8 0 8-5.1 0-7.1-8-12.7-8-4.6 0-4.6 8 0 8 5.6 0 7.6-8 12.7-8z"/></svg>
+        </span>
+        <h3>Free without a catch</h3>
+        <p>Unlimited use for teachers and students, permanently. No trial clock, no locked features at the tutor level, no upsell inside the chat.</p>
+      </div>
+    </div>
+
+    <!-- Condensed privacy summary (approved copy). Full legal page pending. -->
+    <div class="privacy" id="privacy">
+      <div>
+        <h3><span class="tick" aria-hidden="true"></span>Nothing to sign up for. Nothing to worry about.</h3>
+        <div class="prose">
+          <p>Students and teachers can use Synchro Education tutors with zero accounts, zero personal information, and zero data collection. We don't collect names, emails, or IP addresses — ever. Each session is anonymous by design.</p>
+        </div>
+      </div>
+      <!-- INTEGRATION POINT IP-5: /privacy is a PENDING page. Point this
+           link at the full Privacy Policy once legal finalizes it. -->
+      <a class="btn btn-ghost" href="/privacy">Read the full privacy policy</a>
+    </div>
+  </div>
+</section>
+
+<div class="seam seam--paper-dark" aria-hidden="true"><svg viewBox="0 0 1440 88" preserveAspectRatio="none"><polygon class="above" points="0,0 1440,0 1440,6 0,58"/><polygon class="stripe" points="0,58 1440,6 1440,26 0,78"/></svg></div>
+
+<!-- ================= FOR SCHOOLS ================= -->
+<section class="section band" id="schools">
+  <div class="container schools-inner">
+    <div>
+      <p class="eyebrow"><span class="tick" aria-hidden="true"></span>For schools</p>
+      <h2 style="font-size:clamp(1.9rem,3.6vw,2.6rem);margin:.9rem 0 1.1rem;max-width:17ch">AI tutors trained on your coursework, embedded directly in your platform.</h2>
+      <p class="dim" style="max-width:32rem">Everything on this page stays free for teachers and students — permanently. When a school is ready for more, Synchro becomes part of its curriculum and its oversight: tools built for responsible rollout at institutional scale.</p>
+      <div class="cta-row" style="margin-top:2rem">
+        <!-- INTEGRATION POINT IP-3: replace href with the real scheduling
+             URL (Calendly / HubSpot Meetings / etc. — engineer's choice). -->
+        <a class="btn btn-gold" href="https://synchroeducation.com/schedule" data-schedule>Bring Synchro to your school</a>
+        <a class="btn btn-ghost" href="mailto:hello@synchroeducation.com">Email hello@synchroeducation.com</a>
+      </div>
+      <p class="free-line">Free now. Even better with your school behind it.</p>
+
+      <!-- Mid-page opt-in, per spec: one CTA after the school-tier section.
+           INTEGRATION POINT IP-2: HubSpot-compatible email opt-in
+           (email required). Client-side stub — DO NOT SHIP without wiring. -->
+      <div class="band-optin">
+        <p class="dim">Not ready for that conversation yet? Get updates as new subjects and partners launch.</p>
+        <form class="hero-form" data-crm novalidate style="margin-top:0">
+          <label class="sr-only" for="mid-email">Email address</label>
+          <div class="row">
+            <input id="mid-email" type="email" name="email" placeholder="you@yourschool.org" autocomplete="email" required>
+            <button class="btn btn-ghost" type="submit">Send me updates</button>
+          </div>
+          <p class="form-err" role="alert" hidden></p>
+          <p class="form-ok" hidden><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg> You're on the list. Watch your inbox.</p>
+        </form>
+      </div>
+    </div>
+    <ul class="features">
+      <li>
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/><polyline points="7 8 12 3 17 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        <div><b>Upload your coursework</b><span>Tutors answer from exactly what your departments teach — your texts, your units, your pacing.</span></div>
+      </li>
+      <li>
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="4" y1="20" x2="20" y2="20"/><rect x="6" y="11" width="3" height="6" rx="1"/><rect x="11" y="7" width="3" height="10" rx="1"/><rect x="16" y="4" width="3" height="13" rx="1"/></svg>
+        <div><b>Advanced usage metrics</b><span>Full conversation history and usage reporting across your classes and campuses.</span></div>
+      </li>
+      <li>
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16" y2="16"/><line x1="8" y1="11" x2="14" y2="11"/></svg>
+        <div><b>Gap analysis</b><span>See where students are consistently struggling, topic by topic — before the unit test does.</span></div>
+      </li>
+      <li>
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg>
+        <div><b>Safety alerting</b><span>Alerts when a conversation raises concern, routed to the staff you choose — so educators have visibility, not just students.</span></div>
+      </li>
+      <li>
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15.5 14"/></svg>
+        <div><b>Availability windows</b><span>Decide when tutors are on — and when they're off, like outside school hours.</span></div>
+      </li>
+    </ul>
+  </div>
+</section>
+
+<div class="seam seam--dark-paper" aria-hidden="true"><svg viewBox="0 0 1440 88" preserveAspectRatio="none"><polygon class="above" points="0,0 1440,0 1440,6 0,58"/><polygon class="stripe" points="0,58 1440,6 1440,26 0,78"/></svg></div>
+
+<!-- ================= FAQ ================= -->
+<section class="section" id="faq">
+  <div class="container">
+    <div class="section-head" style="margin-inline:auto;text-align:center">
+      <p class="eyebrow" style="justify-content:center"><span class="tick" aria-hidden="true"></span>FAQ</p>
+      <h2>The questions people ask first.</h2>
+    </div>
+    <div class="faq-list">
+      <details>
+        <summary>What happens if you ask it to just write the essay?<span class="plus" aria-hidden="true"></span></summary>
+        <p class="faq-a">It says no — and then gets to work with you. The tutor pivots into guided questions, outline building, and evidence testing, the way a good teacher would across a desk. You leave with your own finished work and the thinking that produced it.</p>
+      </details>
+      <details>
+        <summary>What happens to student data?<span class="plus" aria-hidden="true"></span></summary>
+        <p class="faq-a">Nothing — because we never collect it. No names, emails, or IP addresses; no accounts; no persistent profiles. Sessions use randomized, non-attributable IDs solely for technical support. <a href="/privacy">Read the full privacy policy</a>.</p>
+      </details>
+      <details>
+        <summary>Do teachers need district approval to share this?<span class="plus" aria-hidden="true"></span></summary>
+        <p class="faq-a">That's each district's call, and every policy is different. What we can say: there are no student accounts to create and no personal data leaves the classroom — which removes the concerns most technology policies are written around. Teachers, share this page and our privacy summary with your IT director; we're glad to answer their questions directly.</p>
+      </details>
+      <details>
+        <summary>Why isn't there a Math or Science tutor?<span class="plus" aria-hidden="true"></span></summary>
+        <p class="faq-a">Because we're not ready to do them well. Multi-step, visually represented problem solving is still an area where today's AI makes mistakes — and a tutor that's confidently wrong is worse than no tutor. We'd rather cover four subjects with content we can stand behind than six we can't.</p>
+      </details>
+      <details>
+        <summary>Is the free tier actually free?<span class="plus" aria-hidden="true"></span></summary>
+        <p class="faq-a">Yes — unlimited use, permanently, for teachers and students. No trial clock and no locked features at the tutor level. Schools pay only when they want school-level tools: coursework upload, analytics, safety alerting, and scheduling controls.</p>
+      </details>
+    </div>
+  </div>
+</section>
+
+<!-- ================= FINAL CTA ================= -->
+<section class="section white final" id="updates">
+  <div class="container final-inner">
+    <p class="eyebrow" style="justify-content:center"><span class="tick" aria-hidden="true"></span>Stay in the loop</p>
+    <h2>Put a real tutor in your students' hands this week.</h2>
+    <p class="lead">Try a tutor above, share the link, and we'll tell you as new subjects and publishing partners come online.</p>
+    <!-- INTEGRATION POINT IP-2: final email opt-in. HubSpot-compatible:
+         email required, firstname optional. Same handler as the mid-page form. -->
+    <form class="crm-form" data-crm novalidate>
+      <label class="sr-only" for="cta-name">First name (optional)</label>
+      <input id="cta-name" type="text" name="firstname" placeholder="First name (optional)" autocomplete="given-name">
+      <label class="sr-only" for="cta-email">Email address</label>
+      <input id="cta-email" type="email" name="email" placeholder="you@yourschool.org" autocomplete="email" required>
+      <button class="btn btn-navy" type="submit">Send me updates</button>
+      <p class="form-err" role="alert" hidden style="flex-basis:100%"></p>
+      <p class="form-ok" hidden style="flex-basis:100%"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg> You're on the list. Watch your inbox.</p>
+    </form>
+    <p class="alt">Ready for the school conversation instead? <a href="#schools">Bring this to your school</a>.</p>
+  </div>
+</section>
+
+<!-- ================= FOOTER ================= -->
+<footer class="footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div>
+        <a class="brand" href="/" aria-label="Synchro Education home">
+          <svg class="brand-mark" width="30" height="30" viewBox="0 0 32 32" aria-hidden="true">
+            <rect x="3" y="3" width="26" height="22" rx="7" fill="#FFFFFF"/>
+            <path d="M9 25 L9 30 L15 25 Z" fill="#FFFFFF"/>
+            <rect x="9" y="11" width="14" height="2.6" rx="1.3" fill="#0B2545"/>
+            <rect x="9" y="16.4" width="9" height="2.6" rx="1.3" fill="#17C0CE"/>
+          </svg>
+          <span>
+            <span class="brand-word">Synchro</span>
+            <span class="brand-sub">Education</span>
+          </span>
+        </a>
+        <p class="tagline">Subject-specific AI tutors for grades 6–12, built on licensed academic content — free for teachers and students, with school-level tools when you're ready.</p>
+      </div>
+      <div>
+        <h4>Tutors</h4>
+        <ul>
+          <li><a href="/tutors">All tutors</a></li>
+          <li><a href="/tutors/english">English &amp; Literature</a></li>
+          <li><a href="/tutors/history">History</a></li>
+          <li><a href="/tutors/government-economics">Government &amp; Economics</a></li>
+          <li><a href="/tutors/world-languages">World Languages</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Product</h4>
+        <ul>
+          <li><a href="/">Overview</a></li>
+          <li><a href="#safeguards">Safeguards</a></li>
+          <li><a href="#schools">For schools</a></li>
+          <li><a href="#faq">FAQ</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Legal</h4>
+        <ul>
+          <!-- IP-5: /privacy pending; /terms should point to Synchro's ToS. -->
+          <li><a href="/privacy">Privacy Policy</a></li>
+          <li><a href="/terms">Terms of Service</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Contact</h4>
+        <ul>
+          <li><a href="mailto:hello@synchroeducation.com">hello@synchroeducation.com</a></li>
+          <li><a href="tel:+16027088562">602-708-8562</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>© 2026 Synchro. All rights reserved. Synchro Education is the K–12 education product of Synchro.</p>
+      <p>synchroeducation.com</p>
+    </div>
+  </div>
+</footer>
+
+</main>
+
+<script>
+/* ==========================================================================
+   SYNCHRO EDUCATION — tutor page behavior
+   Progressive enhancement only: with JS disabled the page is fully readable
+   (all sample exchanges render statically; on the hub, all four chats stack).
+   ========================================================================== */
+(function () {
+  'use strict';
+  document.documentElement.classList.replace('no-js', 'js');
+
+  var prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* ----------------------------------------------------------------------
+     INTEGRATION POINT IP-4 — SHARE LINKS (single source of truth)
+     These resolve to the live tutor routes; confirm final production URLs.
+     Both the visible URL text and the copy buttons read from this object.
+     ---------------------------------------------------------------------- */
+  var SHARE_LINKS = {
+    all: 'https://synchroeducation.com/tutors'
+  };
+
+  // Paint visible URLs from SHARE_LINKS (shown without protocol for calm reading)
+  document.querySelectorAll('[data-share-url]').forEach(function (el) {
+    var key = el.getAttribute('data-share-url');
+    if (SHARE_LINKS[key]) el.textContent = SHARE_LINKS[key].replace(/^https?:\/\//, '');
+  });
+
+  /* ---------- Copy-to-clipboard with visible + announced feedback ---------- */
+  var live = document.createElement('div');
+  live.setAttribute('aria-live', 'polite');
+  live.className = 'sr-only';
+  document.body.appendChild(live);
+
+  function legacyCopy(text) {
+    var ta = document.createElement('textarea');
+    ta.value = text;
+    ta.setAttribute('readonly', '');
+    ta.style.position = 'fixed';
+    ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.select();
+    try { document.execCommand('copy'); } catch (e) {}
+    document.body.removeChild(ta);
+  }
+
+  document.querySelectorAll('[data-copy]').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var url = SHARE_LINKS[btn.getAttribute('data-copy')];
+      if (!url) return;
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(url).catch(function () { legacyCopy(url); });
+      } else {
+        legacyCopy(url);
+      }
+      var label = btn.querySelector('[data-copy-label]');
+      var original = label.textContent;
+      btn.classList.add('copied');
+      label.textContent = 'Link copied';
+      live.textContent = 'Link copied to clipboard';
+      window.setTimeout(function () {
+        btn.classList.remove('copied');
+        label.textContent = original;
+        live.textContent = '';
+      }, 2200);
+    });
+  });
+
+  /* ---------- Mobile nav ---------- */
+  var nav = document.getElementById('nav');
+  var toggle = document.getElementById('nav-toggle');
+  toggle.addEventListener('click', function () {
+    var open = nav.classList.toggle('open');
+    toggle.setAttribute('aria-expanded', String(open));
+    toggle.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+  });
+  document.querySelectorAll('.nav-links a').forEach(function (a) {
+    a.addEventListener('click', function () {
+      nav.classList.remove('open');
+      toggle.setAttribute('aria-expanded', 'false');
+    });
+  });
+
+  /* ---------- Hub subject tabs (present on /tutors only) ---------- */
+  var tablist = document.querySelector('.tabs');
+  var tabs = tablist ? Array.prototype.slice.call(tablist.querySelectorAll('.tab')) : [];
+  function activateTab(tab, focus) {
+    tabs.forEach(function (t) {
+      var selected = t === tab;
+      t.setAttribute('aria-selected', String(selected));
+      t.tabIndex = selected ? 0 : -1;
+      var panel = document.getElementById(t.getAttribute('aria-controls'));
+      if (panel) panel.classList.toggle('active', selected);
+      if (selected) {
+        if (focus) t.focus();
+        if (panel) revealChat(panel.querySelector('[data-chat-demo]'), 220);
+      }
+    });
+  }
+  tabs.forEach(function (tab, i) {
+    tab.addEventListener('click', function () { activateTab(tab, false); });
+    tab.addEventListener('keydown', function (e) {
+      var next = null;
+      if (e.key === 'ArrowRight') next = tabs[(i + 1) % tabs.length];
+      if (e.key === 'ArrowLeft') next = tabs[(i - 1 + tabs.length) % tabs.length];
+      if (e.key === 'Home') next = tabs[0];
+      if (e.key === 'End') next = tabs[tabs.length - 1];
+      if (next) { e.preventDefault(); activateTab(next, true); }
+    });
+  });
+
+  /* ---------- Hero entrance + labeled-sample chat reveal ---------- */
+  function revealChat(chat, delay) {
+    if (!chat || chat.classList.contains('live')) return;
+    if (prefersReducedMotion) { chat.classList.add('live'); return; }
+    window.setTimeout(function () { chat.classList.add('live'); }, delay || 0);
+  }
+  var hero = document.querySelector('.hero');
+  if (prefersReducedMotion) {
+    hero.classList.add('in');
+    document.querySelectorAll('[data-chat-demo]').forEach(function (c) { c.classList.add('live'); });
+  } else {
+    window.requestAnimationFrame(function () { hero.classList.add('in'); });
+    if (tabs.length) {
+      activateTab(tabs[0], false);
+      revealChat(document.querySelector('.tabpanel.active [data-chat-demo]'), 500);
+    } else {
+      revealChat(hero.querySelector('[data-chat-demo]'), 450);
+    }
+  }
+  if (tabs.length && prefersReducedMotion) activateTab(tabs[0], false);
+
+  /* ----------------------------------------------------------------------
+     Tutor chat input — INTEGRATION POINTS IP-1a to IP-1d (per-subject chat APIs)
+     The transcript above is a labeled static sample; nothing here fakes a
+     live AI. Replace this stub with the real chat client
+     (form[data-tutor] identifies which tutor the input belongs to).
+     ---------------------------------------------------------------------- */
+  document.querySelectorAll('form[data-tutor]').forEach(function (form) {
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      console.warn('[Synchro] "' + form.getAttribute('data-tutor') + '" tutor chat is not wired yet — see the INTEGRATION POINT comments in this file.');
+    });
+  });
+
+  /* ---------- In-chat selector chips (static demo of the live selector) ---------- */
+  document.querySelectorAll('.chip-row').forEach(function (row) {
+    row.querySelectorAll('.chip').forEach(function (chip) {
+      chip.addEventListener('click', function () {
+        row.querySelectorAll('.chip').forEach(function (c) { c.setAttribute('aria-pressed', 'false'); });
+        chip.setAttribute('aria-pressed', 'true');
+        // Forward the selection to the tutor session when the chat is wired.
+      });
+    });
+  });
+
+  /* ----------------------------------------------------------------------
+     INTEGRATION POINT IP-2 — email opt-in forms (mid-page + final CTA)
+     HubSpot-compatible structure: email (required), firstname (optional).
+     Currently a client-side stub: validates, then shows the success state.
+     DO NOT SHIP without posting to your CRM endpoint here.
+     ---------------------------------------------------------------------- */
+  document.querySelectorAll('form[data-crm]').forEach(function (form) {
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var email = form.querySelector('input[name=email]');
+      var err = form.querySelector('.form-err');
+      var ok = form.querySelector('.form-ok');
+      var valid = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email.value.trim());
+      if (!valid) {
+        err.textContent = 'Enter a valid email address to get updates.';
+        err.hidden = false;
+        email.focus();
+        return;
+      }
+      err.hidden = true;
+      // --> POST { email, firstname? } to CRM here. <--
+      Array.prototype.forEach.call(form.querySelectorAll('input, button'), function (el) { el.hidden = true; });
+      ok.hidden = false;
+    });
+  });
+})();
+</script>
+</body>
+</html>
