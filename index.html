@@ -15,32 +15,41 @@
   })(window,document,'script','dataLayer','GTM-T72H984');</script>
   <!-- End Google Tag Manager -->
 </head>
-<body class="bg-gray-400 h-full">
-  <!-- Google Tag Manager (noscript) -->
-  <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-T72H984"
-  height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
-  <!-- End Google Tag Manager (noscript) -->
-  <div>
-    <p>Hello!?</p>
-  </div>
-    <div>
-    <a href="index2.html">Link to index2.html</a>
-  </div>
-  <!--Synchro Chat Widget Start-->
-  <script>
+<body class="bg-gray-400 h-full p-2"
+    style="background-color: oklch(78.011% 0.03987 219.534)">
+    <div>default namespace is: test</div>
+    <div class="mt-2">append <strong>?namespace=your_namespace</strong> to url to select a different one</div>
+    <div class="mt-2">current namespace is: <span class="font-bold"
+            id="current-namespace"></span></div>
+    <div class="mt-2">current userId is: <span class="font-bold"
+            id="current-user-id"></span></div>
+    <!--Synchro Chat Widget Start-->
+    <script>
         (function () {
-            // Get namespace from URL query parameter, fallback to 'pmp-stormwind'
+            // Get namespace from URL query parameter, fallback to 'test'
             const urlParams = new URLSearchParams(window.location.search);
-            const namespace = urlParams.get('namespace') || 'pmp-stormwind';
+            const namespace = urlParams.get('namespace') || 'test';
+            document.getElementById('current-namespace').textContent = namespace;
+
+            // D-75-12: permanent ?userId= passthrough for the WCLI-01 repro
+            // and reuse in Phase 76/77 UAT. Encoding is required because
+            // real ids contain +, |, @ and = (an unencoded + decodes to a
+            // space on the server).
+            const userId = urlParams.get('userId') || '';
+            document.getElementById('current-user-id').textContent = userId || 'none (anonymous)';
 
             // Create and insert the widget script
             const script = document.createElement('script');
             script.id = 'synchro-chat-widget';
-            script.src = `https://chat.synchrotraining.com/loader.js?namespace=${namespace}`;
+            let loaderSrc = `http:/chat.synchrotraining.com/loader.js?namespace=${encodeURIComponent(namespace)}`;
+            if (userId) {
+                loaderSrc += `&userId=${encodeURIComponent(userId)}`;
+            }
+            script.src = loaderSrc;
             script.async = true;
             document.currentScript.parentNode.insertBefore(script, document.currentScript.nextSibling);
         })();
     </script>
-  <!--Synchro Chat Widget End-->
+    <!--Synchro Chat Widget End-->
 </body>
 </html>
